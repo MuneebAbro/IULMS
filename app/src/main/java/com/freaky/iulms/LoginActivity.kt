@@ -1,5 +1,6 @@
 package com.freaky.iulms
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -38,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     val auth = IULmsAuth()
                     val (success, message) = auth.login("https://iulms.edu.pk/login/index.php", username, password)
-                    
+
                     progressBar.visibility = View.GONE
                     loginButton.isEnabled = true
 
@@ -46,16 +47,26 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity, message, Toast.LENGTH_LONG).show()
 
                     if (success) {
+                        // **THE FIX**: Save credentials on successful login
+                        saveCredentials(username, password)
                         AuthManager.setAuth(auth)
-                        Log.d("IULmsAuth", "Cookies: ${auth.dumpCookies()}")
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent)
-                        finish()
+                        finishAffinity() // Finish all activities in the stack
                     }
                 }
             } else {
                 Toast.makeText(this, "Please enter username and password", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun saveCredentials(username: String, password: String) {
+        val sharedPreferences = getSharedPreferences("IULMS_PREFS", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("USERNAME", username)
+            putString("PASSWORD", password)
+            apply()
         }
     }
 }
