@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,11 +33,15 @@ class MainActivity : AppCompatActivity() {
 
 
         val logoutButton = findViewById<ImageButton>(R.id.logout_button)
+        val logoutcon = findViewById<LinearLayout>(R.id.logout_container)
 
         setupRecyclerView()
 
 
         logoutButton.setOnClickListener {
+            logout()
+        }
+        logoutcon.setOnClickListener {
             logout()
         }
 
@@ -45,10 +50,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         val dashboardItems = listOf(
+            DashboardItem("Time Table", "Schedule", R.drawable.ic_schedule, Activity4::class.java),
+            DashboardItem("Attendance", "Attendance", R.drawable.ic_attendance, Activity3::class.java),
             DashboardItem("Transcript", "Transcript", R.drawable.ic_transcript, Activity1::class.java),
             DashboardItem("Exam Result", "ExamResult", R.drawable.ic_exam_result, Activity2::class.java),
-            DashboardItem("Attendance", "Attendance", R.drawable.ic_attendance, Activity3::class.java),
-            DashboardItem("Schedule", "Schedule", R.drawable.ic_schedule, Activity4::class.java),
+
+
             DashboardItem("Vouchers", "Vouchers", R.drawable.ic_vouchers, Activity5::class.java),
             DashboardItem("Exam Schedule", "ExamSchedule", R.drawable.ic_exam_schedule, Activity6::class.java)
         )

@@ -7,7 +7,7 @@
     <!-- Login Screen Colors -->
     <color name="login_background">#1A232E</color>
     <color name="login_card_background">#253341</color>
-    <color name="login_accent">#4FC3F7</color>
+    <color name="login_accent">#025b94</color>
     <color name="login_text_primary">#FFFFFF</color>
     <color name="login_text_secondary">#6E8897</color>
 
