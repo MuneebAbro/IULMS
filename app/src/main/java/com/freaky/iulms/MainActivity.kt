@@ -76,13 +76,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun logout() {
-        // Clear saved credentials
-        val sharedPreferences = getSharedPreferences("IULMS_PREFS", Context.MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            clear()
-            apply()
-        }
-        // Go to Login Activity
+        // THE FIX: Don't clear SharedPreferences. Just navigate to Login.
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

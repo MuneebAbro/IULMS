@@ -1,53 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/grad_bkg"
+    android:padding="24dp"
     tools:context=".LoginActivity">
 
+    <ImageView
+        android:id="@+id/logo_image"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:layout_above="@id/login_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/iqra" />
+
+    <!-- Welcome Title -->
+    <TextView
+        android:id="@+id/login_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/manual_login_form"
+        android:layout_marginBottom="48dp"
+        android:text="Welcome to IULMS"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:fontFamily="@font/montserrat_bold" />
+
+    <!-- Manual Login Form -->
     <LinearLayout
+        android:id="@+id/manual_login_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/username"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username" />
+            android:textColorHint="@color/login_text_secondary"
+            app:boxStrokeColor="@color/login_accent"
+            app:hintTextColor="@color/login_accent"
+            app:helperTextTextColor="@color/login_accent"
+            app:placeholderTextColor="@color/login_accent"
+            app:cursorColor="@color/login_accent">
 
-        <EditText
-            android:id="@+id/password"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Username"
+                android:textColor="@color/login_text_primary"
+                android:textColorHint="@color/login_accent"
+                android:textColorHighlight="@color/login_accent"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Password"
-            android:inputType="textPassword" />
+            android:layout_marginTop="12dp"
+            android:textColorHint="@color/login_text_secondary"
+            app:boxStrokeColor="@color/login_accent"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/login_accent"
+            app:helperTextTextColor="@color/login_accent"
+            app:placeholderTextColor="@color/login_accent"
+            app:hintTextColor="@color/login_accent"
+            app:cursorColor="@color/login_accent">
 
-        <Button
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:textColor="@color/login_text_primary"
+                android:textColorHint="@color/login_accent"
+                android:textColorHighlight="@color/login_accent"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Login" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:visibility="gone" />
-
+            android:layout_marginTop="24dp"
+            android:padding="12dp"
+            android:text="Login"
+            android:backgroundTint="@color/login_accent"
+            android:textColor="@color/login_text_primary"/>
     </LinearLayout>
 
-    <WebView
-        android:id="@+id/webview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone" />
+    <!-- Saved Accounts Title -->
+    <TextView
+        android:id="@+id/saved_accounts_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/manual_login_form"
+        android:layout_marginTop="32dp"
+        android:text="Saved Accounts"
+        android:textSize="20sp"
+        android:textColor="@color/login_text_secondary"
+        android:fontFamily="@font/montserrat"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
+    <!-- Saved Accounts List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/saved_accounts_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/saved_accounts_title"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        tools:listitem="@layout/item_saved_account"
+        tools:visibility="visible" />
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerInParent="true"
+        android:indeterminateTint="@color/login_accent"
+        android:visibility="gone"/>
 </RelativeLayout>
