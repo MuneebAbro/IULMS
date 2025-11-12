@@ -1,31 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/schedule_card"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="12dp"
+    android:backgroundTint="@color/cardview_light_background"
+    android:foreground="?attr/selectableItemBackground"
+    android:background="@drawable/card_background_gradient"
     app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <TextView
             android:id="@+id/day_name_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Monday"
-            android:textAppearance="?attr/textAppearanceHeadline6" />
+            android:fontFamily="@font/montserrat_bold"
+            android:textColor="@color/login_accent"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            tools:text="Monday" />
 
         <LinearLayout
             android:id="@+id/classes_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:orientation="vertical" />
 
     </LinearLayout>

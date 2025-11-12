@@ -6,6 +6,21 @@
     android:padding="24dp">
 
     <!-- App Title -->
+    <ImageView
+        android:id="@+id/logo_image"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="184dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="564dp"
+        android:src="@drawable/iqra" />
+
     <TextView
         android:id="@+id/splash_title"
         android:layout_width="wrap_content"

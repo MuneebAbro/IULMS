@@ -52,8 +52,7 @@ object HtmlParserUtils {
                 val finalSemesterGpa = if (semesterCredits > 0) String.format("%.2f", semesterGpa / semesterCredits) else "0.00"
                 val overallCgpa = root.optString("cgpa", "N/A")
 
-                // **THE FIX**: Determine semester name based on credit hours
-                val semesterName = if (totalCreditsForSemester <= 9) {
+                val semesterName = if (totalCreditsForSemester < 9) {
                     "Summer Semester"
                 } else {
                     "Semester ${regularSemesterCount++}"
@@ -70,31 +69,27 @@ object HtmlParserUtils {
             Log.d("TranscriptJSON", "Parsing finished with 0 items. JSON start: ${json.take(500)}")
         }
 
-        // The sorting is now handled by the naming logic
         return items
     }
 
-    fun parseExamResult(html: String): List<ExamResultItem> {
+    fun parseExamResult(html: String): Pair<List<ExamResultItem>, String> {
         val items = mutableListOf<ExamResultItem>()
+        var gpa = ""
         try {
             val doc: Document = Jsoup.parse(html)
-            // Find the specific table using its class name for better accuracy.
             val table = doc.select("table.tblAttendance").first()
 
             if (table == null) {
                 Log.w("HtmlParserUtils", "Exam result table with class 'tblAttendance' not found.")
-                return emptyList()
+                return Pair(emptyList(), gpa)
             }
 
             val rows = table.select("tr")
-            // Skip the header row and iterate through the rest.
-            for (row in rows.drop(1)) {
+            for (row in rows.drop(1)) { // Skip header
                 val cols = row.select("td")
-                
-                // Check if the row is a course result row (should have 8 columns)
                 if (cols.size >= 8) {
                     try {
-                        val item = ExamResultItem(
+                        items.add(ExamResultItem(
                             subjectName = cols[0].text().trim(),
                             midterm = cols[1].text().trim(),
                             quizzesAndAssignments = cols[2].text().trim(),
@@ -103,11 +98,12 @@ object HtmlParserUtils {
                             total = cols[5].text().trim(),
                             grade = cols[6].text().trim(),
                             points = cols[7].text().trim()
-                        )
-                        items.add(item)
+                        ))
                     } catch (e: Exception) {
                         Log.e("HtmlParserUtils", "Failed to parse exam result row: ${row.text()}", e)
                     }
+                } else if (cols.size == 1 && cols.text().contains("GPA:")) {
+                    gpa = cols.text().trim()
                 }
             }
         } catch (e: Exception) {
@@ -118,7 +114,7 @@ object HtmlParserUtils {
             Log.d("ExamResultHTML", "Parsing exam results finished with 0 items. HTML start: ${html.take(500)}")
         }
 
-        return items
+        return Pair(items, gpa)
     }
 
     fun parseAttendance(html: String): List<AttendanceItem> {
@@ -126,11 +122,9 @@ object HtmlParserUtils {
         try {
             val doc: Document = Jsoup.parse(html)
 
-            // 1. Parse the main summary table
             val summaryTable = doc.select("table.attendance-table").first() ?: return emptyList()
             val summaryRows = summaryTable.select("tr.attendanceRow")
 
-            // 2. Parse the hidden detail modals
             val detailModals = doc.select("div.modal")
 
             for ((index, summaryRow) in summaryRows.withIndex()) {
@@ -142,7 +136,6 @@ object HtmlParserUtils {
                 val present = summaryCols[2].text().toIntOrNull() ?: 0
                 val percentage = if (total > 0) (present.toDouble() / total) * 100 else 0.0
 
-                // 3. Find the matching detail modal and parse it
                 val detailList = mutableListOf<AttendanceDetailItem>()
                 if (index < detailModals.size) {
                     val detailTable = detailModals[index].select("table.attendance-table").first()
@@ -178,7 +171,6 @@ object HtmlParserUtils {
         val allClassDetails = mutableListOf<TempScheduleItem>()
         try {
             val doc = Jsoup.parse(html)
-            // The main table seems to be the one directly inside the 'center' tag
             val rows = doc.select("center > table > tbody > tr > td > table > tbody > tr")
 
             for (row in rows) {
@@ -218,12 +210,11 @@ object HtmlParserUtils {
             Log.d("ScheduleHTML", "Parsing finished with 0 items. HTML start: ${html.take(500)}")
         }
 
-        // Group the flat list by day
         return allClassDetails.groupBy { it.day }
             .map { (day, tempItems) ->
                 ScheduleItem(day, tempItems.map { it.detail })
             }
-            .sortedBy { // Optional: sort days for consistent order
+            .sortedBy { 
                 when (it.day.toUpperCase()) {
                     "MON" -> 1
                     "TUE" -> 2
@@ -237,7 +228,6 @@ object HtmlParserUtils {
             }
     }
 
-    // Helper data class for grouping
     private data class TempScheduleItem(val day: String, val detail: ScheduleItem.ClassDetail)
 
     fun parseVouchers(html: String): List<VoucherItem> {
@@ -248,8 +238,6 @@ object HtmlParserUtils {
 
             if (voucherTable == null) {
                 if (doc.text().contains("No records found")) {
-                    // This is the case where the user has no outstanding vouchers.
-                    // Return an empty list, which the UI can use to show a "fees paid" message.
                 } else {
                     Log.w("HtmlParserUtils", "Voucher table not found and 'No records' message absent.")
                 }
@@ -301,13 +289,11 @@ object HtmlParserUtils {
         try {
             val doc: Document = Jsoup.parse(html)
 
-            // First, check if the schedule is available.
             if (doc.text().contains("This portion of the website is not available at the moment.", ignoreCase = true)) {
                 Log.d("HtmlParserUtils", "Exam schedule is not available.")
                 return emptyList()
             }
 
-            // Assuming a structure similar to the class schedule, with tables for each date.
             val tables = doc.select("table")
 
             for (table in tables) {

@@ -4,7 +4,7 @@
         android:angle="270"
         android:centerColor="#FFFFFF"
         android:centerY="0.3"
-        android:endColor="#FFFFFF"
+        android:endColor="#EEF5FA"
         android:startColor="#A3D4F5"
         android:type="linear" />
 </shape>

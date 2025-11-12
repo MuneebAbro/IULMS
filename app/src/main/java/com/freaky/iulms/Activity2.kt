@@ -2,6 +2,9 @@ package com.freaky.iulms
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +21,16 @@ class Activity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_2)
 
+        val backButton = findViewById<LinearLayout>(R.id.back_container)
+        val backButton2 = findViewById<ImageButton>(R.id.back_button)
+        val gpaTextView = findViewById<TextView>(R.id.gpa_textview)
+
+        backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+        backButton2.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -29,13 +42,14 @@ class Activity2 : AppCompatActivity() {
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
-            val examResultItems = withContext(Dispatchers.IO) {
+            val (examResultItems, gpa) = withContext(Dispatchers.IO) {
                 HtmlParserUtils.parseExamResult(rawData)
             }
 
             if (examResultItems.isNotEmpty()) {
                 Log.d("Activity2", "Parsed ${examResultItems.size} exam result items.")
                 recyclerView.adapter = ExamResultAdapter(examResultItems)
+                gpaTextView.text = gpa
             } else {
                 Toast.makeText(this@Activity2, "Unable to parse exam result data.", Toast.LENGTH_LONG).show()
             }

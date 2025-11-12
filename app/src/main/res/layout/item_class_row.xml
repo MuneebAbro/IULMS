@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingTop="8dp"
+    android:layout_marginBottom="16dp"
     android:paddingBottom="8dp">
 
     <TextView
@@ -11,19 +12,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Subject Name"
-        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:textColor="#000000"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/teacher_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#000000"
         android:text="Teacher: John Doe" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="12dp"
         android:orientation="horizontal">
 
         <TextView
@@ -31,6 +34,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="#000000"
             android:text="Room: C-1" />
 
         <TextView
@@ -38,6 +42,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="#000000"
             android:text="Time: 09:00 - 10:30" />
     </LinearLayout>
 
@@ -51,6 +56,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="#777777"
             android:text="Course: CS-101" />
 
         <TextView
@@ -58,6 +64,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="#777777"
             android:text="EDP: 12345" />
     </LinearLayout>
 

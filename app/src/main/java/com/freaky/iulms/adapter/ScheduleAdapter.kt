@@ -16,6 +16,7 @@ import java.util.*
 class ScheduleAdapter(private val items: List<ScheduleItem>) : RecyclerView.Adapter<ScheduleAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        // THE FIX: Use the new card layout
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_schedule_card, parent, false)
         return ViewHolder(view)
     }
@@ -30,16 +31,9 @@ class ScheduleAdapter(private val items: List<ScheduleItem>) : RecyclerView.Adap
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val dayNameTextView: TextView = itemView.findViewById(R.id.day_name_textview)
         private val classesContainer: LinearLayout = itemView.findViewById(R.id.classes_container)
-        private val cardView: CardView = itemView.findViewById(R.id.schedule_card)
 
         fun bind(item: ScheduleItem) {
             dayNameTextView.text = item.day
-
-            // Highlight current day
-            val currentDay = SimpleDateFormat("EEE", Locale.getDefault()).format(Date())
-            if (item.day.equals(currentDay, ignoreCase = true)) {
-                cardView.setCardBackgroundColor(Color.parseColor("#E0F7FA")) // A light cyan color
-            }
 
             classesContainer.removeAllViews()
             val inflater = LayoutInflater.from(itemView.context)
@@ -53,7 +47,7 @@ class ScheduleAdapter(private val items: List<ScheduleItem>) : RecyclerView.Adap
                 val edpCodeTextView: TextView = classView.findViewById(R.id.edp_code_textview)
 
                 subjectTextView.text = classDetail.subject
-                teacherTextView.text = "Teacher: ${classDetail.teacher}"
+                teacherTextView.text = "${classDetail.teacher}"
                 roomTextView.text = "Room: ${classDetail.room}"
                 timeTextView.text = "Time: ${classDetail.time}"
                 courseCodeTextView.text = "Course: ${classDetail.courseCode}"
