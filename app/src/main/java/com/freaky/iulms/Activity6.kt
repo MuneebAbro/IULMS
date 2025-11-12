@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,23 +21,25 @@ import kotlinx.coroutines.withContext
 class Activity6 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_generic_list)
+        // THE FIX: Use the correct layout file
+        setContentView(R.layout.activity_6)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         val messageTextView = findViewById<TextView>(R.id.message_textview)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val rawData = intent.getStringExtra("RAW_DATA")
         val backButton = findViewById<LinearLayout>(R.id.back_container)
         val backButton2 = findViewById<ImageButton>(R.id.back_button)
 
-        // handle click
         backButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()  // this safely handles back navigation
+            onBackPressedDispatcher.onBackPressed()
         }
         backButton2.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()  // this safely handles back navigation
+            onBackPressedDispatcher.onBackPressed()
         }
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+        val rawData = intent.getStringExtra("RAW_DATA")
+
         if (rawData.isNullOrEmpty() || rawData.startsWith("Error:")) {
             Toast.makeText(this, rawData ?: "No data received.", Toast.LENGTH_LONG).show()
             return

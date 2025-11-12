@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +29,7 @@ class Activity5 : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         val backButton = findViewById<LinearLayout>(R.id.back_container)
         val backButton2 = findViewById<ImageButton>(R.id.back_button)
-
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
         // handle click
         backButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()  // this safely handles back navigation

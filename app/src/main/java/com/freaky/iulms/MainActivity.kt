@@ -3,12 +3,16 @@ package com.freaky.iulms
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,9 +34,10 @@ class MainActivity : AppCompatActivity() {
 
         mainProgressBar = findViewById(R.id.main_progress_bar)
         dashboardRecyclerView = findViewById(R.id.dashboard_recycler_view)
-
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
 
         val logoutButton = findViewById<ImageButton>(R.id.logout_button)
+        val themeButton = findViewById<ImageButton>(R.id.theme_button)
         val logoutcon = findViewById<LinearLayout>(R.id.logout_container)
 
         setupRecyclerView()
@@ -44,6 +49,21 @@ class MainActivity : AppCompatActivity() {
         logoutcon.setOnClickListener {
             logout()
         }
+        themeButton.setOnClickListener {
+            val dialog = AlertDialog.Builder(
+                ContextThemeWrapper(
+                    this,
+                    androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert
+                )
+            )
+                .setTitle("😢 Oops!")
+                .setMessage("Themes not implemented yet.")
+                .setPositiveButton("Okay", null)
+                .create()
+
+            dialog.show()
+        }
+
 
         fetchData()
     }

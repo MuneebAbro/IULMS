@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
         progressBar = findViewById(R.id.progress_bar)
         manualLoginForm = findViewById(R.id.manual_login_form)
         savedAccountsRecyclerView = findViewById(R.id.saved_accounts_recycler_view)
