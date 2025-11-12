@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@drawable/grad_bkg"
     android:padding="24dp">
 
     <!-- App Title -->
@@ -14,7 +14,7 @@
         android:text="IULMS"
         android:textSize="48sp"
         android:textStyle="bold"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/login_accent"
         android:fontFamily="@font/montserrat_bold"
         android:shadowColor="#33000000"
         android:shadowDx="2"
@@ -28,7 +28,7 @@
         android:layout_below="@id/splash_title"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
-        android:indeterminateTint="@color/colorPrimary"
+        android:indeterminateTint="@color/login_accent"
         android:indeterminate="true"/>
 
 </RelativeLayout>

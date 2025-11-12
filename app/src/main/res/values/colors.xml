@@ -5,9 +5,19 @@
     <color name="colorAccent">#03DAC5</color>
 
     <!-- Login Screen Colors -->
-    <color name="login_background">#FFFFFF</color>
+    <color name="login_background">#1A232E</color>
     <color name="login_card_background">#253341</color>
-    <color name="login_accent">#347B9B</color>
+    <color name="login_accent">#4FC3F7</color>
     <color name="login_text_primary">#FFFFFF</color>
-    <color name="login_text_secondary">#4E5052</color>
+    <color name="login_text_secondary">#6E8897</color>
+
+    <!-- Main Screen Icon Colors -->
+    <color name="icon_tint_transcript">#4A90E2</color>
+    <color name="icon_tint_exam_result">#F5A623</color>
+    <color name="icon_tint_attendance">#7ED321</color>
+    <color name="icon_tint_schedule">#50E3C2</color>
+    <color name="icon_tint_vouchers">#BD10E0</color>
+    <color name="icon_tint_exam_schedule">#F8E71C</color>
+    <color name="white">#FFFFFF</color>
+
 </resources>
