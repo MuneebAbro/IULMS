@@ -2,6 +2,8 @@ package com.freaky.iulms
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +27,16 @@ class Activity6 : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val rawData = intent.getStringExtra("RAW_DATA")
+        val backButton = findViewById<LinearLayout>(R.id.back_container)
+        val backButton2 = findViewById<ImageButton>(R.id.back_button)
 
+        // handle click
+        backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()  // this safely handles back navigation
+        }
+        backButton2.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()  // this safely handles back navigation
+        }
         if (rawData.isNullOrEmpty() || rawData.startsWith("Error:")) {
             Toast.makeText(this, rawData ?: "No data received.", Toast.LENGTH_LONG).show()
             return

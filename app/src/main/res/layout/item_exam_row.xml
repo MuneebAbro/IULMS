@@ -10,12 +10,14 @@
         android:id="@+id/subject_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#000000"
         android:text="Subject Name" />
 
     <TextView
         android:id="@+id/course_code_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#000000"
         android:text="Course Code: CS-101" />
 
     <LinearLayout
@@ -27,6 +29,7 @@
             android:id="@+id/time_textview"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
             android:layout_weight="1"
             android:text="Time: 09:00 - 10:30" />
 
@@ -35,6 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="#000000"
             android:text="Room: C-1" />
     </LinearLayout>
 

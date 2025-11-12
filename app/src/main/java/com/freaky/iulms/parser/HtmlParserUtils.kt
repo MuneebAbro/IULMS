@@ -52,7 +52,7 @@ object HtmlParserUtils {
                 val finalSemesterGpa = if (semesterCredits > 0) String.format("%.2f", semesterGpa / semesterCredits) else "0.00"
                 val overallCgpa = root.optString("cgpa", "N/A")
 
-                val semesterName = if (totalCreditsForSemester < 9) {
+                val semesterName = if (totalCreditsForSemester <= 9) {
                     "Summer Semester"
                 } else {
                     "Semester ${regularSemesterCount++}"

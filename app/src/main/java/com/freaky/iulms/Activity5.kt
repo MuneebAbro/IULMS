@@ -2,6 +2,8 @@ package com.freaky.iulms
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,13 +20,22 @@ import kotlinx.coroutines.withContext
 class Activity5 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Use a different layout that can show a message.
-        setContentView(R.layout.activity_generic_list)
+        // THE FIX: Use the correct layout file
+        setContentView(R.layout.activity_5)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         val messageTextView = findViewById<TextView>(R.id.message_textview)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        val backButton = findViewById<LinearLayout>(R.id.back_container)
+        val backButton2 = findViewById<ImageButton>(R.id.back_button)
 
+        // handle click
+        backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()  // this safely handles back navigation
+        }
+        backButton2.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()  // this safely handles back navigation
+        }
         val rawData = intent.getStringExtra("RAW_DATA")
 
         if (rawData.isNullOrEmpty() || rawData.startsWith("Error:")) {

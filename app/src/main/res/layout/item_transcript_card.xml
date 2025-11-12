@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    android:background="@color/cardview_light_background"
+    android:backgroundTint="@color/cardview_light_background"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
@@ -16,6 +18,8 @@
         <TextView
             android:id="@+id/semester_name_textview"
             android:layout_width="wrap_content"
+            android:textColor="@color/login_accent"
+            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:text="Semester Name"
             android:textAppearance="?attr/textAppearanceHeadline6" />
@@ -31,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="8dp"
-            android:background="?android:attr/listDivider" />
+            android:background="#000000" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,6 +47,8 @@
                 android:id="@+id/gpa_textview"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textStyle="bold"
                 android:layout_weight="1"
                 android:text="GPA: 0.0"/>
 
@@ -51,6 +57,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textStyle="bold"
+                android:textColor="#000000"
                 android:text="CGPA: 0.0"/>
         </LinearLayout>
 

@@ -2,6 +2,8 @@ package com.freaky.iulms.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,10 +65,21 @@ class AttendanceAdapter(private val items: List<AttendanceItem>) : RecyclerView.
             detailRecyclerView.layoutManager = LinearLayoutManager(context)
             detailRecyclerView.adapter = AttendanceDetailAdapter(item.details)
 
-            AlertDialog.Builder(context)
+            val dialog = AlertDialog.Builder(
+                ContextThemeWrapper(
+                    context,
+                    androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert
+                )
+            )
                 .setView(dialogView)
                 .setPositiveButton("Close", null)
-                .show()
+                .create()
+
+            dialog.show()
+
+// Force white background in case dark theme tries to override it
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+
         }
     }
 }

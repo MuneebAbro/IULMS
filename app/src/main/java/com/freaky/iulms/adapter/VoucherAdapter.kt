@@ -47,7 +47,7 @@ class VoucherAdapter(private val items: List<VoucherItem>) : RecyclerView.Adapte
                 dueDateTextView.setTextColor(Color.RED)
             } else {
                 cardView.setCardBackgroundColor(Color.WHITE)
-                dueDateTextView.setTextColor(Color.GRAY)
+                dueDateTextView.setTextColor(Color.BLACK)
             }
 
             // Handle print button click

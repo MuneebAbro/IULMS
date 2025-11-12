@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Loading..."
+        android:textColor="@color/login_accent"
         android:textAppearance="?attr/textAppearanceHeadline6"
         android:visibility="gone" />
 
