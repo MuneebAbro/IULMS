@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.freaky.iulms.adapter.DashboardAdapter
 import com.freaky.iulms.auth.AuthManager
 import com.freaky.iulms.auth.IULmsDataFetcher
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private var fetchedData: Map<String, String>? = null
-    private lateinit var mainProgressBar: ProgressBar
+    private lateinit var mainProgressBar: LottieAnimationView
     private lateinit var dashboardRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,7 +104,7 @@ class MainActivity : AppCompatActivity() {
             fetchedData = dataFetcher.fetchAllData()
             mainProgressBar.visibility = View.GONE
             dashboardRecyclerView.visibility = View.VISIBLE
-            Toast.makeText(this@MainActivity, "Data loaded successfully!", Toast.LENGTH_SHORT).show()
+
         }
     }
 

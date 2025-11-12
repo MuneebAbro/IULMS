@@ -6,15 +6,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.freaky.iulms.adapter.SavedAccountsAdapter
 import com.freaky.iulms.auth.AuthManager
 import com.freaky.iulms.auth.IULmsAuth
@@ -26,7 +25,7 @@ import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var progressBar: ProgressBar
+    private lateinit var loadingAnimationView: LottieAnimationView
     private lateinit var manualLoginForm: LinearLayout
     private lateinit var savedAccountsRecyclerView: RecyclerView
     private lateinit var savedAccountsTitle: TextView
@@ -36,8 +35,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
-        progressBar = findViewById(R.id.progress_bar)
+
+        loadingAnimationView = findViewById(R.id.loading_animation_view)
         manualLoginForm = findViewById(R.id.manual_login_form)
         savedAccountsRecyclerView = findViewById(R.id.saved_accounts_recycler_view)
         savedAccountsTitle = findViewById(R.id.saved_accounts_title)
@@ -77,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun handleLogin(username: String, password: String, isManualLogin: Boolean) {
-        progressBar.visibility = View.VISIBLE
+        loadingAnimationView.visibility = View.VISIBLE
         manualLoginForm.visibility = View.INVISIBLE // Use INVISIBLE to keep layout spacing
         savedAccountsRecyclerView.visibility = View.INVISIBLE
         savedAccountsTitle.visibility = View.INVISIBLE
@@ -86,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
             val auth = IULmsAuth()
             val (success, message) = auth.login("https://iulms.edu.pk/login/index.php", username, password)
 
-            progressBar.visibility = View.GONE
+            loadingAnimationView.visibility = View.GONE
 
             if (success) {
                 if (isManualLogin) {
@@ -111,7 +110,7 @@ class LoginActivity : AppCompatActivity() {
                 saveAccount(username, password)
                 proceedToMain(auth)
             }
-            .setNegativeButton("Don\'t Save") { _, _ ->
+            .setNegativeButton("Don't Save") { _, _ ->
                 proceedToMain(auth)
             }
             .show()

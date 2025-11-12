@@ -47,7 +47,8 @@ dependencies {
     implementation("org.jsoup:jsoup:1.16.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.json:json:20231013")
-    implementation("com.google.code.gson:gson:2.10.1") // Added Gson
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.airbnb.android:lottie:5.2.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

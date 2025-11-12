@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/grad_bkg"
     android:padding="24dp">
 
@@ -11,39 +13,45 @@
         android:layout_width="wrap_content"
         android:layout_height="120dp"
 
-
+android:layout_marginTop="100dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="184dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="564dp"
-        android:src="@drawable/iqra" />
+        android:src="@drawable/iqra"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Sleek Circular Progress -->
     <TextView
         android:id="@+id/splash_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="IULMS"
-        android:textSize="48sp"
-        android:textStyle="bold"
-        android:textColor="@color/login_accent"
         android:fontFamily="@font/montserrat_bold"
         android:shadowColor="#33000000"
         android:shadowDx="2"
         android:shadowDy="2"
-        android:shadowRadius="4"/>
+        android:shadowRadius="4"
+        android:text="IULMS"
+        android:textColor="@color/login_accent"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/loading_animation_view"
+        app:layout_constraintStart_toStartOf="@+id/loading_animation_view"
+        app:layout_constraintTop_toBottomOf="@+id/loading_animation_view" />
 
-    <!-- Sleek Circular Progress -->
-    <ProgressBar
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_below="@id/splash_title"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
-        android:indeterminateTint="@color/login_accent"
-        android:indeterminate="true"/>
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading_animation_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo_image"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loading" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

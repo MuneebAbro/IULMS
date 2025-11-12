@@ -7,7 +7,7 @@
     android:background="@drawable/grad_bkg"
     android:padding="24dp"
     tools:context=".LoginActivity">
-``
+    ``
     <ImageView
         android:id="@+id/logo_image"
         android:layout_width="wrap_content"
@@ -120,13 +120,15 @@
         tools:listitem="@layout/item_saved_account"
         tools:visibility="visible" />
 
-    <!-- Progress Bar -->
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+    <!-- THE FIX: Use LottieAnimationView and reference @raw/loader -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading_animation_view"
+        android:layout_width="450dp"
+        android:layout_height="450dp"
         android:layout_centerInParent="true"
-        android:indeterminateTint="@color/login_accent"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        app:lottie_rawRes="@raw/loading"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>
+
 </RelativeLayout>
