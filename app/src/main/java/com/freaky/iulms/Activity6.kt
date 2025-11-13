@@ -7,7 +7,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,7 +20,6 @@ import kotlinx.coroutines.withContext
 class Activity6 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // THE FIX: Use the correct layout file
         setContentView(R.layout.activity_6)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
@@ -37,7 +35,7 @@ class Activity6 : AppCompatActivity() {
         backButton2.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+
         val rawData = intent.getStringExtra("RAW_DATA")
 
         if (rawData.isNullOrEmpty() || rawData.startsWith("Error:")) {

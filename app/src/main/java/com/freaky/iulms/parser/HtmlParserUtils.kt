@@ -52,7 +52,7 @@ object HtmlParserUtils {
                 val finalSemesterGpa = if (semesterCredits > 0) String.format("%.2f", semesterGpa / semesterCredits) else "0.00"
                 val overallCgpa = root.optString("cgpa", "N/A")
 
-                val semesterName = if (totalCreditsForSemester <= 9) {
+                val semesterName = if (totalCreditsForSemester < 9) {
                     "Summer Semester"
                 } else {
                     "Semester ${regularSemesterCount++}"
@@ -289,43 +289,45 @@ object HtmlParserUtils {
         try {
             val doc: Document = Jsoup.parse(html)
 
-            if (doc.text().contains("This portion of the website is not available at the moment.", ignoreCase = true)) {
-                Log.d("HtmlParserUtils", "Exam schedule is not available.")
+            val notAvailable = doc.select("h2:contains(This portion of the website is not available at the moment)").first()
+            if (notAvailable != null) {
+                Log.d("HtmlParserUtils", "Exam schedule page reports it is not available.")
                 return emptyList()
             }
 
-            val tables = doc.select("table")
+            val tempExams = mutableListOf<TempExam>()
+            // **THE FIX**: A much more specific selector to find the correct table.
+            val rows = doc.select("div.label-head:contains(Tentative Schedule for) + p + table tr")
 
-            for (table in tables) {
-                val dateStr = table.select("th").first()?.text()?.split("(")?.first()?.trim() ?: ""
-                if (dateStr.isEmpty()) continue
+            for (row in rows) {
+                val dateCell = row.select("td.dateStyle").first()
+                val detailsCell = row.select("td.detailsStyle").first()
 
-                val exams = mutableListOf<ExamScheduleItem.ExamDetail>()
-                val rows = table.select("tbody tr")
+                if (dateCell == null || detailsCell == null) continue
 
-                for (row in rows) {
-                    val cols = row.select("td")
-                    if (cols.size >= 4) {
-                        exams.add(ExamScheduleItem.ExamDetail(
-                            subject = cols[0].text(),
-                            courseCode = cols[1].text(),
-                            time = cols[2].text(),
-                            room = cols[3].text()
-                        ))
-                    }
-                }
-                if (exams.isNotEmpty()) {
-                    items.add(ExamScheduleItem(dateStr, exams))
+                val dateStr = dateCell.select("span.dayStyle").html().replace("<br>", " ").trim()
+                val timeStr = dateCell.select("td").last()?.text()?.trim() ?: ""
+
+                val subject = detailsCell.select("tr:contains(Course Title)").text().substringAfter(":").trim()
+                val edpCode = detailsCell.select("tr:contains(EDP Code)").text().substringAfter(":").trim()
+                val room = detailsCell.select("tr:contains(Location)").text().substringAfter(":").trim()
+
+                if (dateStr.isNotEmpty() && subject.isNotEmpty()) {
+                    tempExams.add(TempExam(dateStr, ExamScheduleItem.ExamDetail(subject, edpCode, timeStr, room)))
                 }
             }
+
+            return tempExams.groupBy { it.date }
+                .map { (date, groupedExams) ->
+                    ExamScheduleItem(date, groupedExams.map { it.detail })
+                }
+
         } catch (e: Exception) {
             Log.e("HtmlParserUtils", "Failed to parse exam schedule HTML", e)
         }
 
-        if (items.isEmpty() && !html.contains("not available at the moment")) {
-            Log.d("ExamScheduleHTML", "Parsing exam schedule finished with 0 items. HTML start: ${html.take(500)}")
-        }
-
         return items
     }
+
+    private data class TempExam(val date: String, val detail: ExamScheduleItem.ExamDetail)
 }

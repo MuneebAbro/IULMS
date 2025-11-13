@@ -2,7 +2,10 @@ package com.freaky.iulms
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.ImageButton
@@ -21,12 +24,14 @@ import com.freaky.iulms.adapter.DashboardAdapter
 import com.freaky.iulms.auth.AuthManager
 import com.freaky.iulms.auth.IULmsDataFetcher
 import com.freaky.iulms.model.DashboardItem
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private var fetchedData: Map<String, String>? = null
     private lateinit var mainProgressBar: LottieAnimationView
+    private lateinit var cardView1: MaterialCardView
     private lateinit var dashboardRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         mainProgressBar = findViewById(R.id.main_progress_bar)
+        cardView1 = findViewById(R.id.cardView1)
         dashboardRecyclerView = findViewById(R.id.dashboard_recycler_view)
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
 
@@ -45,12 +51,42 @@ class MainActivity : AppCompatActivity() {
 
 
         logoutButton.setOnClickListener {
-            logout()
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+
+            // Vibrate for error
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(30, 40))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(40)
+            }
+            showLogoutConfirmationDialog()
         }
         logoutcon.setOnClickListener {
-            logout()
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+
+            // Vibrate for error
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(30, 40))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(40)
+            }
+            showLogoutConfirmationDialog()
         }
         themeButton.setOnClickListener {
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+
+            // Vibrate for error
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(30, 40))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(40)
+            }
             val dialog = AlertDialog.Builder(
                 ContextThemeWrapper(
                     this,
@@ -97,16 +133,32 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainProgressBar.visibility = View.VISIBLE
+        cardView1.visibility = View.VISIBLE
         dashboardRecyclerView.visibility = View.GONE
 
         lifecycleScope.launch {
             val dataFetcher = IULmsDataFetcher(client)
             fetchedData = dataFetcher.fetchAllData()
             mainProgressBar.visibility = View.GONE
+            cardView1.visibility = View.GONE
             dashboardRecyclerView.visibility = View.VISIBLE
 
         }
     }
+
+    private fun showLogoutConfirmationDialog() {
+        AlertDialog.Builder(
+            ContextThemeWrapper(this, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert)
+        )
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Logout") { _, _ ->
+                logout()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
 
     private fun logout() {
         val sharedPreferences = getSharedPreferences("IULMS_ACCOUNTS", Context.MODE_PRIVATE)
@@ -120,6 +172,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openActivityWithData(activityClass: Class<*>, data: String?) {
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+
+        // Vibrate for error
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(20, 20))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(20)
+        }
         if (data != null) {
             val intent = Intent(this, activityClass)
             intent.putExtra("RAW_DATA", data)

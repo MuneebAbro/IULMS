@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Username"
-                android:textColor="@color/login_text_primary"
+                android:textColor="#000000"
                 android:textColorHint="@color/login_accent"
                 android:textColorHighlight="@color/login_accent"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Password"
                 android:inputType="textPassword"
-                android:textColor="@color/login_text_primary"
+                android:textColor="#000000"
                 android:textColorHint="@color/login_accent"
                 android:textColorHighlight="@color/login_accent"/>
         </com.google.android.material.textfield.TextInputLayout>

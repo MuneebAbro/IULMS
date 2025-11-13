@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -49,6 +50,9 @@ dependencies {
     implementation("org.json:json:20231013")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.airbnb.android:lottie:5.2.0")
+    implementation(libs.firebase.firestore)
+
+// optional
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
