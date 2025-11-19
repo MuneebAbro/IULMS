@@ -61,13 +61,14 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
 
+
             <ImageButton
                 android:id="@+id/logout_button"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/power"
-                app:tint="#FF0000" />
+                app:tint="#FB4141" />
 
 
 
@@ -92,16 +93,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/item_dashboard_card" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Developed By A Nigga For Niggas 💖"
-        android:textColor="#666666"
-        android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+
 
 
 

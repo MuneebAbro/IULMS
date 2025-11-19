@@ -2,8 +2,10 @@ package com.freaky.iulms
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
@@ -20,6 +22,7 @@ class Activity1 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_1)
+        val cgpaTextView = findViewById<TextView>(R.id.cgpaTextView)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -47,6 +50,9 @@ class Activity1 : AppCompatActivity() {
             if (transcriptItems.isNotEmpty()) {
                 Log.d("Activity1", "Parsed ${transcriptItems.size} transcript items.")
                 recyclerView.adapter = TranscriptAdapter(transcriptItems)
+                val cgpa = transcriptItems.firstOrNull()?.cgpa ?: "N/A"
+                cgpaTextView.text = "CGPA: $cgpa"
+                cgpaTextView.visibility = View.VISIBLE
             } else {
                 Toast.makeText(this@Activity1, "Unable to parse transcript data.", Toast.LENGTH_LONG).show()
             }

@@ -2,127 +2,160 @@ package com.freaky.iulms.auth
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.jsoup.Jsoup
 import java.io.IOException
 
-/**
- * IULmsAuth handles authentication against the IU LMS (Moodle) website.
- * It uses OkHttp for network requests and Jsoup for HTML parsing.
- *
- * Example Usage (in an Activity or ViewModel with a CoroutineScope):
- * ```
- * lifecycleScope.launch {
- *     val auth = IULmsAuth()
- *     val (success, message) = auth.login(
- *         "https://iulms.edu.pk/login/index.php",
- *         "<YOUR_USERNAME>",
- *         "<YOUR_PASSWORD>"
- *     )
- *     Log.d("IULmsAuth", "Login result: $success -> $message")
- *     if (success) {
- *         Log.d("IULmsAuth", "Cookies: ${auth.dumpCookies()}")
- *         // You can now use auth.client to make authenticated requests
- *     }
- * }
- * ```
- */
-class IULmsAuth(client: OkHttpClient) {
+class IULmsAuth {
 
     val client: OkHttpClient
     private val cookieJar = SimpleCookieJar()
 
     init {
-        // The client passed to the constructor is used as a base.
-        // We build our internal client with a cookie jar and redirection enabled.
-        this.client = client.newBuilder()
+        this.client = OkHttpClient.Builder()
             .cookieJar(cookieJar)
             .followRedirects(true)
+            .addInterceptor(::addBrowserHeaders)
             .build()
     }
 
-    constructor() : this(OkHttpClient())
+    private fun addBrowserHeaders(chain: Interceptor.Chain): Response {
+        val originalRequest = chain.request()
+        val builder = originalRequest.newBuilder()
+            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+            .header("Accept-Language", "en-US,en;q=0.9")
+            // Remove Accept-Encoding - let OkHttp handle it automatically
+            // .header("Accept-Encoding", "gzip, deflate, br")
+            .header("Connection", "keep-alive")
+            .header("Cache-Control", "max-age=0")
+            .header("Sec-Fetch-Dest", "document")
+            .header("Sec-Fetch-Mode", "navigate")
+            .header("Sec-Fetch-Site", "none")
+            .header("Sec-Fetch-User", "?1")
+            .header("Upgrade-Insecure-Requests", "1")
 
-    /**
-     * Attempts to log in to the IU LMS.
-     *
-     * @param loginPageUrl The URL of the Moodle login page.
-     * @param username The user's username.
-     * @param password The user's password.
-     * @return A Pair where the first element is true on success, false on failure,
-     *         and the second element is a message describing the outcome.
-     */
+        if (originalRequest.header("Referer") == null && chain.connection() != null) {
+            val referer = originalRequest.url.newBuilder().encodedPath("/").build().toString()
+            builder.header("Referer", referer)
+        }
+        if (originalRequest.header("Origin") == null && chain.connection() != null) {
+            val origin = originalRequest.url.newBuilder().encodedPath("/").build().toString()
+            builder.header("Origin", origin)
+        }
+
+        return chain.proceed(builder.build())
+    }
+
     suspend fun login(loginPageUrl: String, username: String, password: String): Pair<Boolean, String> = withContext(Dispatchers.IO) {
         try {
-            // 1. GET the login page to get the session cookie and hidden form inputs
-            val getResponse = client.newCall(Request.Builder().url(loginPageUrl).header("User-Agent", "Mozilla/5.0").build()).execute()
-            if (!getResponse.isSuccessful) return@withContext false to "Failed to fetch login page: ${getResponse.code}"
-            Log.d("IULmsAuth", "GET $loginPageUrl -> ${getResponse.code}, length=${getResponse.body?.contentLength()}")
+            // STEP 1: Perform an initial GET to establish a session and handle any cookie-test redirects.
+            val initialRequest = Request.Builder().url(loginPageUrl).build()
+            val initialResponse = client.newCall(initialRequest).execute()
+            if (!initialResponse.isSuccessful) return@withContext false to "Failed to connect to login page: ${initialResponse.code}"
 
-            val responseBody = getResponse.body?.string() ?: return@withContext false to "Login page is empty"
+            // This first call might not have the form, but it sets the necessary session cookies.
+            initialResponse.close()
+
+            // Realistic delay
+            delay(800)
+
+            // STEP 2: Now, make a second GET request to the explicit login URL to ensure we get the form.
+            val getLoginRequest = Request.Builder().url(loginPageUrl).header("Referer", loginPageUrl).build()
+            val loginPageResponse = client.newCall(getLoginRequest).execute()
+            if (!loginPageResponse.isSuccessful) return@withContext false to "Failed to fetch login page content: ${loginPageResponse.code}"
+
+            // OkHttp automatically handles decompression when you use .string()
+            val responseBody = loginPageResponse.body?.string() ?: return@withContext false to "Login page is empty"
+
+            // Debug: Log first 500 chars to verify it's readable HTML
+            Log.d("IULmsAuth", "Response preview: ${responseBody.take(500)}")
+
             val doc = Jsoup.parse(responseBody, loginPageUrl)
 
-            // 2. Find the login form and extract its inputs
-            val form = doc.select("form").find { it.select("input[name=username], input[name=password]").size >= 2 } 
-                ?: doc.select("form#login").first() 
-                ?: doc.select("form").first()
-                ?: return@withContext false to "Could not find a login form on the page."
+            // STEP 3: Extract the login form action URL and any CSRF tokens
+            val loginForm = doc.selectFirst("form#login, form[name=login], form[action*=login]")
+            if (loginForm == null) {
+                Log.e("IULmsAuth", "Could not find login form on the page.")
+                Log.d("IULmsAuth_FAIL_HTML", responseBody.take(2000))
+                return@withContext false to "Could not find login form on the page."
+            }
 
-            val formActionUrl = form.absUrl("action").ifEmpty { loginPageUrl }
-            val formInputs = form.select("input").associate { it.attr("name") to it.attr("value") }.toMutableMap()
-            Log.d("IULmsAuth", "Parsed form inputs: ${formInputs.keys}")
+            // Extract the form action URL (might be different from loginPageUrl)
+            val formAction = loginForm.attr("action")
+            val postUrl = if (formAction.isNotEmpty()) {
+                if (formAction.startsWith("http")) formAction else loginPageUrl.toHttpUrl().newBuilder().encodedPath(formAction).build().toString()
+            } else {
+                loginPageUrl
+            }
+            Log.d("IULmsAuth", "Form action URL: $postUrl")
 
-            // 3. Overwrite credentials and build the POST request body
-            formInputs["username"] = username
-            formInputs["password"] = password
-            // Moodle might check for this to enable cookies
-            formInputs["testcookies"] = "1"
+            // Try to find logintoken (newer Moodle versions)
+            val loginToken = doc.selectFirst("input[name=logintoken]")?.attr("value")
+            if (loginToken != null) {
+                Log.d("IULmsAuth", "Found Moodle logintoken: $loginToken")
+            } else {
+                Log.d("IULmsAuth", "No logintoken found - this appears to be an older Moodle version")
+            }
 
-            val formBody = FormBody.Builder().apply {
-                formInputs.forEach { (key, value) -> add(key, value) }
-            }.build()
+            // STEP 4: Build the POST request body with all hidden fields
+            val formBodyBuilder = FormBody.Builder()
+                .add("username", username)
+                .add("password", password)
 
-            // 4. POST the login credentials
+            // Add logintoken if it exists (newer Moodle)
+            if (loginToken != null) {
+                formBodyBuilder.add("logintoken", loginToken)
+            }
+
+            // Add any other hidden input fields from the form
+            loginForm.select("input[type=hidden]").forEach { hiddenInput ->
+                val name = hiddenInput.attr("name")
+                val value = hiddenInput.attr("value")
+                if (name.isNotEmpty() && name != "logintoken") {
+                    formBodyBuilder.add(name, value)
+                    Log.d("IULmsAuth", "Adding hidden field: $name = $value")
+                }
+            }
+
+            val formBody = formBodyBuilder.build()
+
+            delay(1200)
+
+            // STEP 5: POST the login credentials to the form action URL.
             val postRequest = Request.Builder()
-                .url(formActionUrl)
-                .header("User-Agent", "Mozilla/5.0")
+                .url(postUrl)
+                .header("Referer", loginPageUrl)
                 .post(formBody)
                 .build()
 
             val postResponse = client.newCall(postRequest).execute()
             val finalUrl = postResponse.request.url.toString()
-            Log.d("IULmsAuth", "POST to $formActionUrl -> finalUrl=$finalUrl")
-
-            // 5. Verify login success
-            if (finalUrl.contains("/my/") || finalUrl.contains("/dashboard") || finalUrl.contains("/course")) {
-                return@withContext true to "Login successful. Redirected to dashboard."
-            }
-
             val postResponseBody = postResponse.body?.string() ?: ""
-            if (postResponseBody.contains("Invalid login", ignoreCase = true) || postResponseBody.contains("incorrect password")) {
-                return@withContext false to "Invalid credentials."
-            }
-            
-            if (doc.select("input[name=captcha]").isNotEmpty()) {
-                 return@withContext false to "CAPTCHA detected on login page, cannot proceed."
-            }
+            Log.d("IULmsAuth", "POST to $postUrl -> finalUrl=$finalUrl")
 
-            // As a final check, get the dashboard page and see if the login form is still there
-            val dashboardUrl = loginPageUrl.toHttpUrlOrNull()?.newBuilder("/my/")?.build()
-                ?: return@withContext false to "Could not construct dashboard URL from login page URL."
-            val dashboardResponse = client.newCall(Request.Builder().url(dashboardUrl).build()).execute()
-            val dashboardBody = dashboardResponse.body?.string() ?: ""
-            val stillOnLoginPage = dashboardBody.contains("login") && dashboardBody.contains("password")
-            Log.d("IULmsAuth", "Dashboard fetch -> containsLoginForm=$stillOnLoginPage")
+            // STEP 6: Verify login success by checking multiple indicators
+            val success = finalUrl.contains("/my/") ||
+                    finalUrl.contains("my.php") ||
+                    postResponseBody.contains("loggedinas", ignoreCase = true) ||
+                    postResponseBody.contains("You are logged in as", ignoreCase = true)
 
-            if (!stillOnLoginPage) {
-                true to "Login successful (verified by dashboard fetch)."
+            if (success) {
+                true to "Login successful."
             } else {
-                false to "Login failed. Please check credentials."
+                if (postResponseBody.contains("Invalid login", ignoreCase = true) ||
+                    postResponseBody.contains("incorrect username", ignoreCase = true) ||
+                    postResponseBody.contains("incorrect password", ignoreCase = true)) {
+                    false to "Invalid username or password."
+                } else {
+                    Log.e("IULmsAuth", "Login failed for an unknown reason.")
+                    Log.d("IULmsAuth_FAIL_HTML", postResponseBody.take(2000))
+                    false to "Login failed. The site may have updated its login process."
+                }
             }
-
         } catch (e: IOException) {
             Log.e("IULmsAuth", "Network error during login", e)
             false to "Network error: ${e.message}"
@@ -132,18 +165,11 @@ class IULmsAuth(client: OkHttpClient) {
         }
     }
 
-    /**
-     * Dumps all cookies currently in the CookieJar for debugging.
-     * @return A list of all cookies.
-     */
     fun dumpCookies(): List<Cookie> {
         return cookieJar.dumpAllCookies()
     }
 }
 
-/**
- * A simple in-memory CookieJar implementation.
- */
 class SimpleCookieJar : CookieJar {
     private val storage = mutableListOf<Cookie>()
 

@@ -2,8 +2,10 @@ package com.freaky.iulms.update
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.util.Log
+import android.view.ContextThemeWrapper
 import androidx.appcompat.app.AlertDialog
 import com.freaky.iulms.BuildConfig
 import com.google.gson.Gson
@@ -85,19 +87,27 @@ object UpdateChecker {
      * Shows the update dialog to the user.
      */
     private fun showUpdateDialog(context: Context, updateInfo: UpdateInfo) {
-        val builder = AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(ContextThemeWrapper(context, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert))
             .setTitle("Update Available")
             .setMessage("A newer version (${updateInfo.latestVersion}) is available.")
             .setPositiveButton("Update Now") { _, _ ->
                 openUrl(context, updateInfo.apkUrl)
             }
+            .apply {
+                if (!updateInfo.forceUpdate) {
+                    setNegativeButton("Later", null)
+                }
+            }
+            .setCancelable(!updateInfo.forceUpdate)
+            .create()
 
-        if (!updateInfo.forceUpdate) {
-            builder.setNegativeButton("Later", null)
-        }
+        dialog.show()
 
-        builder.setCancelable(!updateInfo.forceUpdate)
-        builder.show()
+// Hardcode button colors
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(Color.parseColor("#1A73E8")) // blue
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(Color.parseColor("#E53935")) // red
+
+
     }
 
     /**

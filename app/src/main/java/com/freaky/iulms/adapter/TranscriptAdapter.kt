@@ -27,12 +27,11 @@ class TranscriptAdapter(private val items: List<TranscriptItem>) : RecyclerView.
         private val semesterNameTextView: TextView = itemView.findViewById(R.id.semester_name_textview)
         private val subjectsContainer: LinearLayout = itemView.findViewById(R.id.subjects_container)
         private val gpaTextView: TextView = itemView.findViewById(R.id.gpa_textview)
-        private val cgpaTextView: TextView = itemView.findViewById(R.id.cgpa_textview)
+
 
         fun bind(item: TranscriptItem) {
             semesterNameTextView.text = item.semester
             gpaTextView.text = "GPA: ${item.gpa}"
-            cgpaTextView.text = "CGPA: ${item.cgpa}"
 
             // Dynamically add subject rows
             subjectsContainer.removeAllViews()

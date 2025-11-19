@@ -2,6 +2,7 @@ package com.freaky.iulms
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -46,10 +47,10 @@ class MainActivity : AppCompatActivity() {
             showThemeNotImplementedDialog()
         }
 
-        // **Check for updates when the main activity is created**
         lifecycleScope.launch {
             UpdateChecker.checkForUpdates(this@MainActivity)
         }
+
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -74,12 +75,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLogoutConfirmationDialog() {
-        AlertDialog.Builder(ContextThemeWrapper(this, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert))
+        val dialog = AlertDialog.Builder(
+            this, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert
+        )
             .setTitle("Logout")
             .setMessage("Are you sure you want to logout?")
             .setPositiveButton("Logout") { _, _ -> logout() }
             .setNegativeButton("Cancel", null)
-            .show()
+            .setCancelable(false)
+            .create()
+
+        dialog.show()
+
+// Now you can access buttons
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(Color.parseColor("#1A73E8"))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(Color.parseColor("#E53935"))
+
     }
 
     private fun showThemeNotImplementedDialog() {

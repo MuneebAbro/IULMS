@@ -2,9 +2,11 @@ package com.freaky.iulms
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.ContextThemeWrapper
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -20,6 +22,7 @@ import com.freaky.iulms.adapter.SavedAccountsAdapter
 import com.freaky.iulms.auth.AuthManager
 import com.freaky.iulms.auth.IULmsAuth
 import com.freaky.iulms.model.SavedAccount
+import com.freaky.iulms.update.UpdateChecker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -38,6 +41,10 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        lifecycleScope.launch {
+            UpdateChecker.checkForUpdates(this@LoginActivity)
+        }
 
         loadingAnimationView = findViewById(R.id.loading_animation_view)
         manualLoginForm = findViewById(R.id.manual_login_form)
@@ -123,9 +130,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showSaveCredentialDialog(username: String, password: String, auth: IULmsAuth) {
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(ContextThemeWrapper(this, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert))
             .setTitle("Save Login?")
             .setMessage("Would you like to save your credentials for faster login next time?")
+            .setCancelable(false) // ❌ can't cancel by back button or outside touch
             .setPositiveButton("Save") { _, _ ->
                 saveAccount(username, password)
                 proceedToMain(auth)
@@ -133,7 +141,39 @@ class LoginActivity : AppCompatActivity() {
             .setNegativeButton("Don't Save") { _, _ ->
                 proceedToMain(auth)
             }
-            .show()
+            .create()
+
+        dialog.show()
+
+// 🎨 Hardcode button colors after showing the dialog
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(Color.parseColor("#1A73E8")) // blue
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(Color.parseColor("#E53935")) // red
+
+    }
+    fun hideKeyboard() {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val view = currentFocus
+        if (view is TextInputEditText) {
+            val scrCoords = IntArray(2)
+            view.getLocationOnScreen(scrCoords)
+            val x = ev.rawX + view.left - scrCoords[0]
+            val y = ev.rawY + view.top - scrCoords[1]
+            if (ev.action == MotionEvent.ACTION_DOWN &&
+                (x < view.left || x > view.right || y < view.top || y > view.bottom)
+            ) {
+                hideKeyboard()
+            }
+        } else {
+            hideKeyboard()
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     private fun proceedToMain(auth: IULmsAuth) {

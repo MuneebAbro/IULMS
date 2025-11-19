@@ -7,6 +7,22 @@
     android:fitsSystemWindows="true"
     android:background="@drawable/grad_bkg">
 
+    <TextView
+        android:id="@+id/cgpaTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="CGPA"
+        android:textColor="@color/login_accent"
+        android:padding="12dp"
+        android:gravity="center"
+        android:textSize="22sp"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    </TextView>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_bar"
         android:layout_width="0dp"
@@ -72,7 +88,7 @@
         android:layout_height="0dp"
         android:padding="8dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintTop_toBottomOf="@id/cgpaTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
