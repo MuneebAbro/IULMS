@@ -4,6 +4,7 @@
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     app:cardCornerRadius="16dp"
+    android:backgroundTint="@color/white"
     app:cardElevation="8dp">
 
     <LinearLayout
@@ -17,6 +18,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_gravity="center"
+            android:tint="@color/login_accent"
             android:src="@drawable/ic_launcher_foreground"
             android:contentDescription="App Icon" />
 
@@ -61,6 +63,16 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:text="Please wait while we install the update..."
+            android:textColor="#9E9E9E"
+            android:textSize="12sp"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:text="Check Notifications to install APK"
             android:textColor="#9E9E9E"
             android:textSize="12sp"
             android:gravity="center" />

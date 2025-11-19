@@ -30,12 +30,12 @@ class MainActivity : AppCompatActivity() {
     private val INSTALL_PERMISSION_REQUEST_CODE = 101
     private val NOTIFICATION_PERMISSION_REQUEST_CODE = 102
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         requestNeededPermissions()
+
 
         val dashboardRecyclerView = findViewById<RecyclerView>(R.id.dashboard_recycler_view)
         val logoutButton = findViewById<ImageButton>(R.id.logout_button)
@@ -56,31 +56,31 @@ class MainActivity : AppCompatActivity() {
             vibrate()
             showThemeNotImplementedDialog()
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        // Check for pending install when returning to the app
+        // This handles the case when user returns from Settings after granting permission
         lifecycleScope.launch {
             UpdateChecker.checkForUpdates(this@MainActivity)
         }
-
     }
+
     private fun requestNeededPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_PERMISSION_REQUEST_CODE)
             } else {
-                // If notification permission is already granted, proceed to check for updates
                 checkForAppUpdates()
             }
         } else {
-            // On older versions, no notification permission is needed, so check for updates directly
             checkForAppUpdates()
         }
-        // Note: The permission to install packages is handled differently, via an intent to system settings,
-        // which the UpdateChecker now handles automatically if needed.
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // After any permission request, try checking for updates again.
         checkForAppUpdates()
     }
 
@@ -89,6 +89,7 @@ class MainActivity : AppCompatActivity() {
             UpdateChecker.checkForUpdates(this@MainActivity)
         }
     }
+
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         val dashboardItems = listOf(
             DashboardItem("Time Table", "https://iulms.edu.pk/sic/Schedule.php", R.drawable.ic_schedule, Activity4::class.java),
@@ -122,11 +123,8 @@ class MainActivity : AppCompatActivity() {
             .create()
 
         dialog.show()
-
-// Now you can access buttons
         dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(Color.parseColor("#1A73E8"))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(Color.parseColor("#E53935"))
-
     }
 
     private fun showThemeNotImplementedDialog() {
