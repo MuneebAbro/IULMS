@@ -1,13 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
     namespace = "com.freaky.iulms"
     compileSdk {
         version = release(36)
+    }
+
+    // THE FIX: Enable BuildConfig generation
+    buildFeatures {
+        buildConfig = true
     }
 
     defaultConfig {
@@ -50,7 +54,6 @@ dependencies {
     implementation("org.json:json:20231013")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.airbnb.android:lottie:5.2.0")
-    implementation(libs.firebase.firestore)
 
 // optional
     testImplementation(libs.junit)

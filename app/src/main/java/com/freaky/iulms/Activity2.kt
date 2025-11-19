@@ -7,7 +7,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,7 +33,7 @@ class Activity2 : AppCompatActivity() {
         }
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+        
         val rawData = intent.getStringExtra("RAW_DATA")
 
         if (rawData.isNullOrEmpty() || rawData.startsWith("Error:")) {

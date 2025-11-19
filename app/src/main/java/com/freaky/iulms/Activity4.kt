@@ -23,7 +23,7 @@ class Activity4 : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+
         val backButton = findViewById<LinearLayout>(R.id.back_container)
         val backButton2 = findViewById<ImageButton>(R.id.back_button)
 

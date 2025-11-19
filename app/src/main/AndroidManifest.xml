@@ -15,15 +15,16 @@
         android:roundIcon="@drawable/e"
         android:supportsRtl="true"
         android:theme="@style/Theme.IULMS">
+        
         <activity
             android:name=".SplashActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".Activity1" />
@@ -33,6 +34,7 @@
         <activity android:name=".Activity5" />
         <activity android:name=".Activity6" />
         <activity android:name=".VoucherPrintActivity" />
+        <activity android:name=".LoadingActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
     </application>
 
 </manifest>

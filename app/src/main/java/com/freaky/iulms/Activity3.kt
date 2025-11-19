@@ -20,7 +20,7 @@ class Activity3 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_3)
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
         val backButton = findViewById<LinearLayout>(R.id.back_container)
