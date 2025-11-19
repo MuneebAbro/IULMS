@@ -13,5 +13,6 @@ data class UpdateInfo(
     val apkUrl: String,
 
     @SerializedName("forceUpdate")
-    val forceUpdate: Boolean
+    val forceUpdate: Boolean,
+    val changelog: String? = null
 )

@@ -158,4 +158,10 @@ class MainActivity : AppCompatActivity() {
             vibrator.vibrate(40)
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Cleanup UpdateChecker resources
+        UpdateChecker.cleanup()
+    }
 }
