@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.MotionEvent
 import android.view.View
@@ -22,7 +21,6 @@ import com.freaky.iulms.adapter.SavedAccountsAdapter
 import com.freaky.iulms.auth.AuthManager
 import com.freaky.iulms.auth.IULmsAuth
 import com.freaky.iulms.model.SavedAccount
-import com.freaky.iulms.update.UpdateChecker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -41,10 +39,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        lifecycleScope.launch {
-            UpdateChecker.checkForUpdates(this@LoginActivity)
-        }
 
         loadingAnimationView = findViewById(R.id.loading_animation_view)
         manualLoginForm = findViewById(R.id.manual_login_form)
@@ -121,11 +115,31 @@ class LoginActivity : AppCompatActivity() {
                     proceedToMain(auth)
                 }
             } else {
-                Toast.makeText(this@LoginActivity, "Login Failed: $message", Toast.LENGTH_LONG).show()
+                // Check the failure message
+                val errorMessage = when {
+                    message.contains("Failed to fetch login page", ignoreCase = true) ||
+                            message.contains("Network error", ignoreCase = true) -> {
+                        "IULMS seems to be down. Please try again later."
+                    }
+                    message.contains("CAPTCHA detected", ignoreCase = true) -> {
+                        "IULMS is asking for CAPTCHA. Cannot login automatically."
+                    }
+                    message.contains("Invalid login", ignoreCase = true) ||
+                            message.contains("incorrect password", ignoreCase = true) -> {
+                        "Invalid username or password."
+                    }
+                    else -> {
+                        "Login failed: $message"
+                    }
+                }
+
+                Toast.makeText(this@LoginActivity, errorMessage, Toast.LENGTH_LONG).show()
+
                 // Restore view visibility on failure
                 manualLoginForm.visibility = View.VISIBLE
                 setupInitialView()
             }
+
         }
     }
 
@@ -133,7 +147,7 @@ class LoginActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(ContextThemeWrapper(this, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert))
             .setTitle("Save Login?")
             .setMessage("Would you like to save your credentials for faster login next time?")
-            .setCancelable(false) // ❌ can't cancel by back button or outside touch
+            .setCancelable(false)
             .setPositiveButton("Save") { _, _ ->
                 saveAccount(username, password)
                 proceedToMain(auth)

@@ -10,31 +10,19 @@ import android.os.Vibrator
 import android.view.ContextThemeWrapper
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.freaky.iulms.adapter.DashboardAdapter
 import com.freaky.iulms.model.DashboardItem
-import com.freaky.iulms.update.UpdateChecker
-import kotlinx.coroutines.launch
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
-
-    private val INSTALL_PERMISSION_REQUEST_CODE = 101
-    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 102
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        requestNeededPermissions()
 
 
         val dashboardRecyclerView = findViewById<RecyclerView>(R.id.dashboard_recycler_view)
@@ -60,35 +48,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Check for pending install when returning to the app
-        // This handles the case when user returns from Settings after granting permission
-        lifecycleScope.launch {
-            UpdateChecker.checkForUpdates(this@MainActivity)
-        }
+
     }
 
-    private fun requestNeededPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_PERMISSION_REQUEST_CODE)
-            } else {
-                checkForAppUpdates()
-            }
-        } else {
-            checkForAppUpdates()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        checkForAppUpdates()
-    }
-
-    private fun checkForAppUpdates() {
-        lifecycleScope.launch {
-            UpdateChecker.checkForUpdates(this@MainActivity)
-        }
-    }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         val dashboardItems = listOf(
@@ -159,7 +121,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Cleanup UpdateChecker resources
-        UpdateChecker.cleanup()
+
     }
 }
