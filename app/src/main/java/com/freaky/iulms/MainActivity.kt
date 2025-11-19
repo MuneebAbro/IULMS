@@ -20,12 +20,22 @@ import com.freaky.iulms.adapter.DashboardAdapter
 import com.freaky.iulms.model.DashboardItem
 import com.freaky.iulms.update.UpdateChecker
 import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
+
+    private val INSTALL_PERMISSION_REQUEST_CODE = 101
+    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 102
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        requestNeededPermissions()
 
         val dashboardRecyclerView = findViewById<RecyclerView>(R.id.dashboard_recycler_view)
         val logoutButton = findViewById<ImageButton>(R.id.logout_button)
@@ -52,7 +62,33 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+    private fun requestNeededPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_PERMISSION_REQUEST_CODE)
+            } else {
+                // If notification permission is already granted, proceed to check for updates
+                checkForAppUpdates()
+            }
+        } else {
+            // On older versions, no notification permission is needed, so check for updates directly
+            checkForAppUpdates()
+        }
+        // Note: The permission to install packages is handled differently, via an intent to system settings,
+        // which the UpdateChecker now handles automatically if needed.
+    }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // After any permission request, try checking for updates again.
+        checkForAppUpdates()
+    }
+
+    private fun checkForAppUpdates() {
+        lifecycleScope.launch {
+            UpdateChecker.checkForUpdates(this@MainActivity)
+        }
+    }
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         val dashboardItems = listOf(
             DashboardItem("Time Table", "https://iulms.edu.pk/sic/Schedule.php", R.drawable.ic_schedule, Activity4::class.java),
